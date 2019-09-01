@@ -6,3 +6,4 @@ Repositorio para Organizacion de Datos - Nombre del equipo a definir
 * Data Souls
 * Data Padoru
 * Data Waifu
+* Dima Dima Dom & the others
