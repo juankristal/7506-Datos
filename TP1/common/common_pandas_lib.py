@@ -85,5 +85,46 @@ def setear_titulos_plot(plot, titulo, etiqueta_x, etiqueta_y):
     plot.set_xlabel(etiqueta_x, fontsize = TAM_ETIQUETA)
     plot.set_ylabel(etiqueta_y, fontsize = TAM_ETIQUETA)
 
-# Plots
+# Crear dataframes
+def crear_dataframe_desde_grupo_porcentajes(df, nombre_columna_grupos, nombre_columna_porcentajes):
+    """
+    PRE: Recibe un dataframe (pandas.DataFrame), y el nombre de dos
+    columnas en el mismo.
+    POST: Devuelve un nuevo dataframe, resultante de agrupar (por
+    nombre_columna_grupos) el dataframe recibido, y calcular el
+    porcentaje que representa cada valor (nombre_columna_porcentajes),
+    en cada grupo.
+    Las columnas del dataframe resultante seran::
+        'nombre_columna_grupos',
+        'nombre_columna_porcentajes',
+        'porcentaje'
+    El data frame devuelto no esta agrupado.
+    """
+    nuevo_df = df.groupby([nombre_columna_grupos])[nombre_columna_porcentajes].apply(value_counts_normalize_porcentual)
+    nuevo_df = nuevo_df.to_frame()
+    nuevo_df.columns = ['porcentaje']
+    nuevo_df.reset_index(inplace=True)
+    return nuevo_df
 
+def crear_dataframe_desde_grupo_estadisticas(df, nombre_columna_grupos, nombre_columna_estadisticas):
+    """
+    PRE : Recibe un dataframe (pandas.DataFrame) y el nombre de dos
+    columnas en el mismo.
+    POST: Devuelve un nuevo dataframe, resultante de agrupar (por
+    nombre_columna_grupos) el dataframe recibido, y calcular:
+        cuantil_1,
+        mediana,
+        cuantil_3
+    (sobre nombre_columna_estadisticas) en cada grupo.
+    Las columnas del dataframe resultante seran:
+        'nombre_columna_grupo',
+        'nombre_columna_estadisticas_cuantil_1',
+        'nombre_columna_estadisticas_median',
+        'nombre_columna_estadisticas_cuantil_3'
+    (en este orden)
+    EL dataframe devuelto no esta agrupado.
+    """
+    nuevo_df = df.groupby([nombre_columna_grupos]).agg({nombre_columna_estadisticas : [cuantil_1, 'median', cuantil_3]})
+    nuevo_df.columns = nuevo_df.columns.get_level_values(0) + '_' + nuevo_df.columns.get_level_values(1)
+    nuevo_df.reset_columns(inplace = True)
+    return nuevo_df
