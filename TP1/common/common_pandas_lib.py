@@ -5,12 +5,49 @@ import numpy as np
 from matplotlib import pyplot as plt
 import seaborn as sns
 
- # Configuraciones plots
+## Configuraciones plots
 TAM_TITULO = 35
 TAM_ETIQUETA = 30
 COLORES_BARRAS = 'colorblind'
 
 ## Funciones auxiliares
+ # Carga optimizada del set de datos
+
+def cargar_train_optimizado(ruta_set_datos):
+    """
+    PRE: Recibe la ruta al el set de datos
+    'train.csv', alguno derivado pero que
+    mantenga todas sus columnas.
+    POST: Carga el set de datos en un dataframe
+    (pandas.DataFrame), optimizando los tipos
+    de datos, para ahorrar espacio en memoria.
+    Devuelve este dataframe (pandas.DataFrame)
+    """
+    df_optimizado = pd.read_csv(ruta_set_datos, \
+                        dtype={ \
+                            'id': np.int32, \
+                            'tipodepropiedad': 'category', \
+                            'provincia': 'category', \
+                            'ciudad': 'category', \
+                            'antiguedad': np.float16, \
+                            'habitaciones': np.float16, \
+                            'garages': np.float16, \
+                            'banos': np.float16, \
+                            'metroscubiertos': np.float16, \
+                            'metrostotales': np.float16, \
+                            'idzona': np.float32, \
+                            'gimnasio': 'bool', \
+                            'usosmultiples': 'bool', \
+                            'piscina': 'bool', \
+                            'escuelascercanas': 'bool', \
+                            'centroscomercialescercanos': 'bool', \
+                            'precio': np.float32 \
+                            },
+                        parse_dates = ['fecha'],
+                        date_parser = pd.to_datetime
+                        )
+    return df_optimizado
+
  # Funciones estadisticas
 
 def cuantil_1(serie):
@@ -40,7 +77,7 @@ def value_counts_normalize_porcentual(serie):
 
  # Funciones para plots
 
-def agregar_serie_boxplot(boxplot, serie, color = 'b', desplazamiento_x = 0, desplazamiento_y = 0):
+def agregar_serie_boxplot(boxplot, serie, color = 'k', desplazamiento_x = 0, desplazamiento_y = 0):
     """
     PRE: Recibe:
         un boxplot (seaborn.boxplot);
@@ -86,7 +123,7 @@ def setear_titulos_plot(plot, titulo, etiqueta_x, etiqueta_y):
     plot.set_ylabel(etiqueta_y, fontsize = TAM_ETIQUETA)
 
 # Crear dataframes
-def crear_dataframe_desde_grupo_porcentajes(df, nombre_columna_grupos, nombre_columna_porcentajes):
+def agrupar_calcular_porcentajes_desagrupar(df, nombre_columna_grupos, nombre_columna_porcentajes):
     """
     PRE: Recibe un dataframe (pandas.DataFrame), y el nombre de dos
     columnas en el mismo.
@@ -106,7 +143,7 @@ def crear_dataframe_desde_grupo_porcentajes(df, nombre_columna_grupos, nombre_co
     nuevo_df.reset_index(inplace=True)
     return nuevo_df
 
-def crear_dataframe_desde_grupo_estadisticas(df, nombre_columna_grupos, nombre_columna_estadisticas):
+def agrupar_calcular_estadisticas_desagrupar(df, nombre_columna_grupos, nombre_columna_estadisticas):
     """
     PRE : Recibe un dataframe (pandas.DataFrame) y el nombre de dos
     columnas en el mismo.
@@ -126,5 +163,11 @@ def crear_dataframe_desde_grupo_estadisticas(df, nombre_columna_grupos, nombre_c
     """
     nuevo_df = df.groupby([nombre_columna_grupos]).agg({nombre_columna_estadisticas : [cuantil_1, 'median', cuantil_3]})
     nuevo_df.columns = nuevo_df.columns.get_level_values(0) + '_' + nuevo_df.columns.get_level_values(1)
-    nuevo_df.reset_columns(inplace = True)
+    nuevo_df.reset_index(inplace = True)
     return nuevo_df
+
+"""
+banos_centroscomercialescercanos_porcentaje_para_plot['tiene_centroscomercialescercanos'] = banos_centroscomercialescercanos_porcentaje_para_plot['tiene_centroscomercialescercanos'].transform(lambda x: 'Si' if x == True else 'No')
+#
+
+"""
