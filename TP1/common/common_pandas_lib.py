@@ -9,6 +9,7 @@ import seaborn as sns
 TAM_TITULO = 35
 TAM_ETIQUETA = 30
 COLORES_BARRAS = 'colorblind'
+ANCHO_BARRA_LEYENDA = 10
 
 ## Funciones auxiliares
  # Carga optimizada del set de datos
@@ -134,7 +135,9 @@ def agregar_valores_stacked_barplot(
     for i in range(len(df_pivot.index)):
         plot_i = varios_plots_apilados[i]
         serie_i_valores = df_pivot_diff.iloc[i]
-        serie_i_y_pos = df_pivot.iloc[i]
+        serie_i_y_pos = df_pivot.iloc[i] / 2
+        if (i >= 1):
+            serie_i_y_pos = (df_pivot.iloc[i] + df_pivot.iloc[i-1]) / 2
         agregar_serie_plot(plot_i, serie_i_valores, serie_i_y_pos, color, desplazamiento_x, desplazamiento_y)
     return varios_plots_apilados
 
@@ -218,10 +221,12 @@ def columna_bool_a_si_no(df, nombre_columna_bool):
     return df
 
  # Funciones para hacer plots
-def plot_stacked_barplot(df_pivot):
+def plot_stacked_barplot(df_pivot, leyenda_titulo = "", leyenda_loc_x = 1, leyenda_loc_y = 1):
     """
     PRE: Recibe un dataframe (pandas.DataFrame),
     pivoteado segun dos columnas cualquiera.
+    Ademas puede recibir un titulo para la leyenda,
+    y su localizacion.
     POST: Grafica un "Stacked Barplot", donde
     la barras base es la primera linea del dataframe
     recibido, y, el tope, la ultima de ellas.
@@ -245,5 +250,9 @@ def plot_stacked_barplot(df_pivot):
                 ax = ax
             )
         )
-    ax.legend(title)
-    return varios_plots_apilados, ax
+    leyenda = plt.legend(df_pivot.index, title = leyenda_titulo, loc = [leyenda_loc_x, leyenda_loc_y])
+    for i in range(cantidad_filas):
+        color = str(sns.color_palette(COLORES_BARRAS).as_hex()[i])
+        leyenda.legendHandles[i].set_color(color)
+        leyenda.legendHandles[i].set_lw(ANCHO_BARRA_LEYENDA)
+    return varios_plots_apilados
