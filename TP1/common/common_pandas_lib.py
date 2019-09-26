@@ -1,7 +1,9 @@
 ## Imports
 
 import pandas as pd
+import geopandas
 import numpy as np
+from math import pi
 from matplotlib import pyplot as plt
 import seaborn as sns
 
@@ -27,9 +29,9 @@ def cargar_train_optimizado(ruta_set_datos):
     df_optimizado = pd.read_csv(ruta_set_datos, \
                         dtype={ \
                             'id': np.int32, \
-                            'tipodepropiedad': 'category', \
-                            'provincia': 'category', \
-                            'ciudad': 'category', \
+                            #'tipodepropiedad': 'category', \
+                            #'provincia': 'category', \
+                            #'ciudad': 'category', \
                             'antiguedad': np.float16, \
                             'habitaciones': np.float16, \
                             'garages': np.float16, \
@@ -142,7 +144,7 @@ def agregar_valores_stacked_barplot(
     return varios_plots_apilados
 
 
-def setear_titulos_plot(plot, titulo, etiqueta_x, etiqueta_y):
+def setear_titulos_plot(plot, titulo = "", etiqueta_x = "", etiqueta_y = ""):
     """
     PRE: Recibe:
         un plot (seaborn.<algun>plot);
@@ -256,3 +258,62 @@ def plot_stacked_barplot(df_pivot, leyenda_titulo = "", leyenda_loc_x = 1, leyen
         leyenda.legendHandles[i].set_color(color)
         leyenda.legendHandles[i].set_lw(ANCHO_BARRA_LEYENDA)
     return varios_plots_apilados
+
+
+def crear_mapa_provincias_mexico(
+        df,
+        columna,
+        vmin,
+        vmax,
+        paleta_colores = 'inferno',
+        mostrar_ejes = True,
+        titulo_barra = "",
+):
+    """
+    PRE: Recibe :
+        un dataframe (pandas.DataFrame) indexado
+        por el nombre de las provincias de Mexico;
+        el nombre de una columna de en el dataframe anterior;
+        los valores minimo y maximo para la barra de escalas;
+        el titulo del grafico y el titlo de la barra de escalas;
+        la paleta de colores para el usar en el grafico.
+    POST : Grafica un mapa de Mexico divido por provincias,
+    coloreado al dataframe y la columna recibidos.
+    Devuelve la figura (matplotlib.pyplot.Figure) y la base
+    (matplotlib.pyplot.ax) del grafico
+    """
+    # Creo mi mapa de mexico
+    mexico = geopandas.read_file('Data/mexstates.shp')  # Los estados pueden ser vistos con mexico.ADMIN_NAME
+
+    # Le pongo los tildes al archivo de estados para que me coincidan con las provincias
+    mexico["ADMIN_NAME"].replace({'Nuevo Leon': "Nuevo León",
+                                  "San Luis Potosi": "San luis Potosí",
+                                  "Queretaro": "Querétaro",
+                                  "Yucatan": "Yucatán",
+                                  "Michoacan": "Michoacán",
+                                  "Mexico": "Edo. de México",
+                                  "Baja California": "Baja California Norte"}, inplace=True)
+
+    # Hago un nuevo dataframe con la información del mapa y la antiguedad para cada provincia
+    gdf = mexico.set_index("ADMIN_NAME").join(df)
+
+    # Grafico el mapa
+
+    # Base donde se va a dibujar
+    fig, base = plt.subplots(1, figsize=(10, 6))
+
+    # Si les parece que los ejes están de más, pongan off
+    if (mostrar_ejes):
+        base.axis("on")
+    else:
+        base.axis("off")
+    # Pido que me coloreé en base a la caracteristica determinada
+    gdf.plot(column=columna, cmap=paleta_colores, linewidth=0.8, ax=base, edgecolor="0.8")
+
+    # Agrego la barra que indica la antiguedad
+    # l:left, b:bottom, w:width, h:height
+    cbax = fig.add_axes([1, 0.15, 0.02, 0.65])
+    sm = plt.cm.ScalarMappable(cmap=paleta_colores, norm=plt.Normalize(vmin=vmin, vmax=vmax))
+    cbar = fig.colorbar(sm, cax=cbax)
+    cbar.set_label(titulo_barra)
+    return fig, base
