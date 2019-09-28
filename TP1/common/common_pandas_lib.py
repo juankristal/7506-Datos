@@ -363,11 +363,11 @@ def crear_radares_alineados(df, fil, col, paleta_colores):
         ax.set_theta_direction(-1)
     
         # Draw one axe per variable + add labels labels yet
-        plt.xticks(angulos[:-1], categorias, color='grey', size=10)
+        plt.xticks(angulos[:-1], categorias, color='grey', size=15)
     
         # Draw ylabels
         ax.set_rlabel_position(0)
-        plt.yticks([1,2,3,4], ["1","2","3","4"], color="grey", size=10)
+        plt.yticks([1,2,3,4], ["1","2","3","4"], color="grey", size=15)
         plt.ylim(0,4)
         
         # Ind1
@@ -376,7 +376,8 @@ def crear_radares_alineados(df, fil, col, paleta_colores):
         ax.plot(angulos, values, color=color, linewidth=1, linestyle='solid')
         ax.fill(angulos, values, color=color, alpha=0.4)
         
-        plt.title(df["provincia"][fila], size=16, color=color, y=1.1)
+        #plt.title(df["provincia"][fila], size=TAM_ETIQUETA, color=color, y=1.1)
+        plt.title("{}) {}".format(fila + 1, df["provincia"][fila]), size=TAM_ETIQUETA, color=color, y=1.1)
         
         lista.append(ax)
     
