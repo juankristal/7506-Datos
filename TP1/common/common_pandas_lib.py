@@ -307,12 +307,12 @@ def crear_mapa(series,
     gdf.plot(column=caracteristica, cmap=color, linewidth=0.8, ax=base, edgecolor="0.8")
 
     #Setteo el título al gráfico
-    base.set_title(titulo, fontsize = TAM_TITULO)
+    base.set_title(titulo, fontsize = 23)
     
     #Agrego la barra que indica la antiguedad
     # l:left, b:bottom, w:width, h:height
     cbax = fig.add_axes([1, 0.15, 0.02, 0.65])   
-    cbax.set_title(titulo_barra)
+    cbax.set_title(titulo_barra, fontsize = 18)
     sm = plt.cm.ScalarMappable(cmap=color, norm=plt.Normalize(vmin=vmin, vmax=vmax))
     cbar = fig.colorbar(sm, cax=cbax)
     
