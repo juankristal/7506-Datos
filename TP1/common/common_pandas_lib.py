@@ -316,7 +316,7 @@ def crear_mapa(series,
     sm = plt.cm.ScalarMappable(cmap=color, norm=plt.Normalize(vmin=vmin, vmax=vmax))
     cbar = fig.colorbar(sm, cax=cbax)
     
-    plt.savefig("Graficos/" + titulo + ".png", bbox_inches = "tight")
+    plt.savefig("figs/" + titulo + ".png", bbox_inches = "tight")
     
     my_dpi=65
     plt.figure(figsize=(1250/my_dpi, 1250/my_dpi), dpi=my_dpi)
@@ -415,3 +415,13 @@ def crear_radar_superpuestos(categorias, datos_a, datos_b, leyenda_a, leyenda_b,
     plt.legend(loc='upper right', bbox_to_anchor=(0.1, 0.1))
 
     plt.title(titulo, size=TAM_TITULO, y=1.1)
+    
+def crear_heatmap_porcentaje(df_data, caracteristica, titulo, xlabel, ylabel, color):
+    df_data = pd.pivot_table(df_data, index=["provincia"], columns=caracteristica, values="porcentaje")
+    df_data = df_data.fillna(0)
+    
+    hm = sns.heatmap(df_data, linewidths=.5, xticklabels=True, yticklabels=True, cmap = color)
+    hm.set_title(titulo, fontsize = TAM_TITULO) 
+    hm.set_xlabel(xlabel, fontsize = TAM_ETIQUETA)
+    hm.set_ylabel(ylabel, fontsize = TAM_ETIQUETA)
+    plt.show()
