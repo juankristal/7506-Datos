@@ -260,60 +260,201 @@ def plot_stacked_barplot(df_pivot, leyenda_titulo = "", leyenda_loc_x = 1, leyen
     return varios_plots_apilados
 
 
-def crear_mapa_provincias_mexico(
-        df,
-        columna,
-        vmin,
-        vmax,
-        paleta_colores = 'inferno',
-        mostrar_ejes = True,
-        titulo_barra = "",
-):
+def crear_mapa(series,
+               caracteristica,
+               vmin,
+               vmax,
+               titulo,
+               titulo_barra,
+               color):
     """
     PRE: Recibe :
-        un dataframe (pandas.DataFrame) indexado
-        por el nombre de las provincias de Mexico;
-        el nombre de una columna de en el dataframe anterior;
+        una serie indexada por el nombre de las provincias de mexico,
+        cuya columna son datos numéricos;
+        el nombre de la columna de la serie;
         los valores minimo y maximo para la barra de escalas;
         el titulo del grafico y el titlo de la barra de escalas;
         la paleta de colores para el usar en el grafico.
     POST : Grafica un mapa de Mexico divido por provincias,
     coloreado al dataframe y la columna recibidos.
     Devuelve la figura (matplotlib.pyplot.Figure) y la base
-    (matplotlib.pyplot.ax) del grafico
+    (matplotlib.pyplot.ax) del grafico. Guarda los gráficos
+    en la carpeta Graficos.
     """
-    # Creo mi mapa de mexico
-    mexico = geopandas.read_file('Data/mexstates.shp')  # Los estados pueden ser vistos con mexico.ADMIN_NAME
+    mexico = geopandas.read_file('Data/mexstates.shp') #Los estados pueden ser vistos con mexico.ADMIN_NAME
 
-    # Le pongo los tildes al archivo de estados para que me coincidan con las provincias
+    #Le pongo los tildes al archivo de estados para que me coincidan con las provincias
     mexico["ADMIN_NAME"].replace({'Nuevo Leon': "Nuevo León",
-                                  "San Luis Potosi": "San luis Potosí",
-                                  "Queretaro": "Querétaro",
-                                  "Yucatan": "Yucatán",
-                                  "Michoacan": "Michoacán",
-                                  "Mexico": "Edo. de México",
-                                  "Baja California": "Baja California Norte"}, inplace=True)
+                               "San Luis Potosi": "San luis Potosí",
+                               "Queretaro": "Querétaro",
+                               "Yucatan": "Yucatán",
+                               "Michoacan": "Michoacán",
+                               "Mexico": "Edo. de México",
+                               "Baja California": "Baja California Norte"}, inplace=True)
 
-    # Hago un nuevo dataframe con la información del mapa y la antiguedad para cada provincia
-    gdf = mexico.set_index("ADMIN_NAME").join(df)
+    #Hago un nuevo dataframe con la información del mapa y la antiguedad para cada provincia
+    gdf = mexico.set_index("ADMIN_NAME").join(series)
+    
+    #Grafico el mapa
 
-    # Grafico el mapa
-
-    # Base donde se va a dibujar
+    #Base donde se va a dibujar
     fig, base = plt.subplots(1, figsize=(10, 6))
 
-    # Si les parece que los ejes están de más, pongan off
-    if (mostrar_ejes):
-        base.axis("on")
-    else:
-        base.axis("off")
-    # Pido que me coloreé en base a la caracteristica determinada
-    gdf.plot(column=columna, cmap=paleta_colores, linewidth=0.8, ax=base, edgecolor="0.8")
+    #Si les parece que los ejes están de más, pongan off
+    base.axis("on")
 
-    # Agrego la barra que indica la antiguedad
+    #Pido que me coloreé en base a la caracteristica determinada
+    gdf.plot(column=caracteristica, cmap=color, linewidth=0.8, ax=base, edgecolor="0.8")
+
+    #Setteo el título al gráfico
+    base.set_title(titulo, fontsize = 23)
+    
+    #Agrego la barra que indica la antiguedad
     # l:left, b:bottom, w:width, h:height
-    cbax = fig.add_axes([1, 0.15, 0.02, 0.65])
-    sm = plt.cm.ScalarMappable(cmap=paleta_colores, norm=plt.Normalize(vmin=vmin, vmax=vmax))
+    cbax = fig.add_axes([1, 0.15, 0.02, 0.65])   
+    cbax.set_title(titulo_barra, fontsize = 18)
+    sm = plt.cm.ScalarMappable(cmap=color, norm=plt.Normalize(vmin=vmin, vmax=vmax))
     cbar = fig.colorbar(sm, cax=cbax)
-    cbar.set_label(titulo_barra)
+    
+    plt.savefig("figs/" + titulo + ".png", bbox_inches = "tight")
+    
+    my_dpi=65
+    plt.figure(figsize=(1250/my_dpi, 1250/my_dpi), dpi=my_dpi)
+
     return fig, base
+
+def crear_radares_alineados(df, fil, col, paleta_colores):
+    """
+    PRE: Recibe :
+        un dataframe con un index por cada radar que se
+        vaya a hacer;
+        la cantidad de filas del gráfico;
+        la cantidad de columnas del gráfico;
+        Ej: si pongo fil=2 y col=3, en una fila voy a
+        tener 3 radares y en la siguiente fila 3 radares.
+        la paleta de colores con la que se va a colorear
+        el gráfico
+    POST : Grafica fil * col radares o menos, según los
+    datos del datagrame. Devuelve la figura.
+    """
+    
+    # Categorias
+    columnas = df.columns
+    categorias = list(columnas[1:])
+    N = len(categorias)
+    
+    # What will be the angle of each axis in the plot? (we divide the plot / number of variable)
+    angulos = [n / float(N) * 2 * pi for n in range(N)]
+    angulos += angulos[:1]
+    
+    # Color
+    paleta = plt.cm.get_cmap(paleta_colores, len(df.index))
+    
+    lista = []
+    
+    for fila in range(0, len(df.index)):
+        color = paleta(fila)
+        
+        # Initialise the spider plot
+        ax = plt.subplot(fil, col, fila + 1, polar=True, )
+    
+        # If you want the first axis to be on top:
+        ax.set_theta_offset(pi / 2)
+        ax.set_theta_direction(-1)
+    
+        # Draw one axe per variable + add labels labels yet
+        plt.xticks(angulos[:-1], categorias, color='grey', size=20)
+    
+        # Draw ylabels
+        ax.set_rlabel_position(0)
+        plt.yticks([1,2,3,4], ["1","2","3","4"], color="grey", size=15)
+        plt.ylim(0,4)
+        
+        # Ind1
+        values=df.loc[fila].drop("provincia").values.flatten().tolist()
+        values += values[:1]
+        ax.plot(angulos, values, color=color, linewidth=1, linestyle='solid')
+        ax.fill(angulos, values, color=color, alpha=0.4)
+        
+        #plt.title(df["provincia"][fila], size=TAM_ETIQUETA, color=color, y=1.1)
+        plt.title("{}) {}".format(fila + 1, df["provincia"][fila]), size=TAM_ETIQUETA, color=color, y=1.1)
+        
+        lista.append(ax)
+    
+    fig, lista = plt.subplots(0)
+    return fig
+
+def crear_radar_superpuestos(categorias, datos_a, datos_b, leyenda_a, leyenda_b, titulo):
+    #Basado en https://python-graph-gallery.com/391-radar-chart-with-several-individuals/
+    N = len(categorias)
+    angulos = [n / float(N) * 2 * pi for n in range(N)]
+    angulos += angulos[:1]
+    print(angulos)
+
+    ax = plt.subplot(111, polar=True)
+    
+    ax.set_theta_offset(pi / 2)
+    ax.set_theta_direction(-1)
+
+    plt.xticks(angulos[:-1], categorias, color='grey')
+    
+    ax.set_rlabel_position(0)
+    plt.yticks([1, 2, 3, 4], ["1", "2", "3", "4"], color="grey", size=15)
+    plt.ylim(0,5)
+    
+    values = list(datos_a)
+    values += values[:1]
+    ax.plot(angulos, values, linewidth=2, linestyle='solid', markerfacecolor='blue', label=leyenda_a)
+    ax.fill(angulos, values, 'b', alpha=0.1)
+
+    values = list(datos_b)
+    values += values[:1]
+    ax.plot(angulos, values, linewidth=2, linestyle='solid', markerfacecolor='yellow',label=leyenda_b)
+    ax.fill(angulos, values, 'y', alpha=0.1)
+    
+    plt.legend(loc='upper right', bbox_to_anchor=(0.1, 0.1))
+
+    plt.title(titulo, size=TAM_TITULO, y=1.1)
+    
+def crear_heatmap_porcentaje(df_data, caracteristica, titulo, xlabel, ylabel, color):
+    df_data = pd.pivot_table(df_data, index=["provincia"], columns=caracteristica, values="porcentaje")
+    df_data = df_data.fillna(0)
+    
+    hm = sns.heatmap(df_data, linewidths=.5, xticklabels=True, yticklabels=True, cmap = color)
+    hm.set_title(titulo, fontsize = TAM_TITULO) 
+    hm.set_xlabel(xlabel, fontsize = TAM_ETIQUETA)
+    hm.set_ylabel(ylabel, fontsize = TAM_ETIQUETA)
+    plt.show()
+    
+def crear_df_porcentaje_de_provincias(df1, df2, caracteristica):
+    """df1: el df de cátedra/
+       df2: un df multiindex de la forma {"cantidad": cantidad}, index = [provincia, tipodepropiedad]
+       Devuelve un multiindex con el porcentaje para cada tipo de propiedad por provincia"""
+    cantidad = df1["provincia"].value_counts()
+    index1 = []
+    index2 = []
+    porcentaje = []
+    provincias = set(list(df2.index.get_level_values(0)))
+    for provincia in provincias:
+        df_provincia = df2.loc[provincia].reset_index()
+        for index, row in df_provincia.iterrows():
+            index1.append(provincia)
+            index2.append(row[caracteristica])
+            porcentaje.append((row["cantidad"] * 100) / cantidad[provincia])
+    df = pd.DataFrame({"porcentaje": porcentaje}, index = [index1, index2])
+    return df
+
+def crear_plot_multiple(data, x, y, caracteristica, paleta, titulo, titulo_barra, xlabel, ylabel, orientacion):
+    grafico = sns.barplot(
+        x = x, 
+        hue = caracteristica,
+        y = y,
+        data = data,
+        palette = paleta,
+        orient=orientacion
+    )
+    grafico.set_title(titulo, fontsize = TAM_TITULO)
+    grafico.set_xlabel(xlabel, fontsize = TAM_ETIQUETA)
+    grafico.set_ylabel(ylabel, fontsize = TAM_ETIQUETA)
+    grafico.legend(title = titulo_barra)
+    plt.show()
