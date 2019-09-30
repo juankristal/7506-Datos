@@ -383,3 +383,35 @@ def crear_radares_alineados(df, fil, col, paleta_colores):
     
     fig, lista = plt.subplots(0)
     return fig
+
+def crear_radar_superpuestos(categorias, datos_a, datos_b, leyenda_a, leyenda_b, titulo):
+    #Basado en https://python-graph-gallery.com/391-radar-chart-with-several-individuals/
+    N = len(categorias)
+    angulos = [n / float(N) * 2 * pi for n in range(N)]
+    angulos += angulos[:1]
+    print(angulos)
+
+    ax = plt.subplot(111, polar=True)
+    
+    ax.set_theta_offset(pi / 2)
+    ax.set_theta_direction(-1)
+
+    plt.xticks(angulos[:-1], categorias, color='grey')
+    
+    ax.set_rlabel_position(0)
+    plt.yticks([1, 2, 3, 4], ["1", "2", "3", "4"], color="grey", size=15)
+    plt.ylim(0,5)
+    
+    values = list(datos_a)
+    values += values[:1]
+    ax.plot(angulos, values, linewidth=2, linestyle='solid', markerfacecolor='blue', label=leyenda_a)
+    ax.fill(angulos, values, 'b', alpha=0.1)
+
+    values = list(datos_b)
+    values += values[:1]
+    ax.plot(angulos, values, linewidth=2, linestyle='solid', markerfacecolor='yellow',label=leyenda_b)
+    ax.fill(angulos, values, 'y', alpha=0.1)
+    
+    plt.legend(loc='upper right', bbox_to_anchor=(0.1, 0.1))
+
+    plt.title(titulo, size=TAM_TITULO, y=1.1)
