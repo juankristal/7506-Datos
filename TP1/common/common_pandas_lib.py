@@ -6,6 +6,12 @@ import numpy as np
 from math import pi
 from matplotlib import pyplot as plt
 import seaborn as sns
+from nltk.stem.snowball import SnowballStemmer
+from nltk.corpus import stopwords
+from PIL import Image
+from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
+import json
+import os
 
 ## Configuraciones plots
 TAM_TITULO = 35
