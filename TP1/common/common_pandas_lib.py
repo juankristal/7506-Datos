@@ -316,7 +316,7 @@ def crear_mapa(series,
     sm = plt.cm.ScalarMappable(cmap=color, norm=plt.Normalize(vmin=vmin, vmax=vmax))
     cbar = fig.colorbar(sm, cax=cbax)
     
-    plt.savefig("Graficos/" + titulo + ".png", bbox_inches = "tight")
+    plt.savefig("figs/" + titulo + ".png", bbox_inches = "tight")
     
     my_dpi=65
     plt.figure(figsize=(1250/my_dpi, 1250/my_dpi), dpi=my_dpi)
@@ -383,3 +383,78 @@ def crear_radares_alineados(df, fil, col, paleta_colores):
     
     fig, lista = plt.subplots(0)
     return fig
+
+def crear_radar_superpuestos(categorias, datos_a, datos_b, leyenda_a, leyenda_b, titulo):
+    #Basado en https://python-graph-gallery.com/391-radar-chart-with-several-individuals/
+    N = len(categorias)
+    angulos = [n / float(N) * 2 * pi for n in range(N)]
+    angulos += angulos[:1]
+    print(angulos)
+
+    ax = plt.subplot(111, polar=True)
+    
+    ax.set_theta_offset(pi / 2)
+    ax.set_theta_direction(-1)
+
+    plt.xticks(angulos[:-1], categorias, color='grey')
+    
+    ax.set_rlabel_position(0)
+    plt.yticks([1, 2, 3, 4], ["1", "2", "3", "4"], color="grey", size=15)
+    plt.ylim(0,5)
+    
+    values = list(datos_a)
+    values += values[:1]
+    ax.plot(angulos, values, linewidth=2, linestyle='solid', markerfacecolor='blue', label=leyenda_a)
+    ax.fill(angulos, values, 'b', alpha=0.1)
+
+    values = list(datos_b)
+    values += values[:1]
+    ax.plot(angulos, values, linewidth=2, linestyle='solid', markerfacecolor='yellow',label=leyenda_b)
+    ax.fill(angulos, values, 'y', alpha=0.1)
+    
+    plt.legend(loc='upper right', bbox_to_anchor=(0.1, 0.1))
+
+    plt.title(titulo, size=TAM_TITULO, y=1.1)
+    
+def crear_heatmap_porcentaje(df_data, caracteristica, titulo, xlabel, ylabel, color):
+    df_data = pd.pivot_table(df_data, index=["provincia"], columns=caracteristica, values="porcentaje")
+    df_data = df_data.fillna(0)
+    
+    hm = sns.heatmap(df_data, linewidths=.5, xticklabels=True, yticklabels=True, cmap = color)
+    hm.set_title(titulo, fontsize = TAM_TITULO) 
+    hm.set_xlabel(xlabel, fontsize = TAM_ETIQUETA)
+    hm.set_ylabel(ylabel, fontsize = TAM_ETIQUETA)
+    plt.show()
+    
+def crear_df_porcentaje_de_provincias(df1, df2, caracteristica):
+    """df1: el df de cátedra/
+       df2: un df multiindex de la forma {"cantidad": cantidad}, index = [provincia, tipodepropiedad]
+       Devuelve un multiindex con el porcentaje para cada tipo de propiedad por provincia"""
+    cantidad = df1["provincia"].value_counts()
+    index1 = []
+    index2 = []
+    porcentaje = []
+    provincias = set(list(df2.index.get_level_values(0)))
+    for provincia in provincias:
+        df_provincia = df2.loc[provincia].reset_index()
+        for index, row in df_provincia.iterrows():
+            index1.append(provincia)
+            index2.append(row[caracteristica])
+            porcentaje.append((row["cantidad"] * 100) / cantidad[provincia])
+    df = pd.DataFrame({"porcentaje": porcentaje}, index = [index1, index2])
+    return df
+
+def crear_plot_multiple(data, x, y, caracteristica, paleta, titulo, titulo_barra, xlabel, ylabel, orientacion):
+    grafico = sns.barplot(
+        x = x, 
+        hue = caracteristica,
+        y = y,
+        data = data,
+        palette = paleta,
+        orient=orientacion
+    )
+    grafico.set_title(titulo, fontsize = TAM_TITULO)
+    grafico.set_xlabel(xlabel, fontsize = TAM_ETIQUETA)
+    grafico.set_ylabel(ylabel, fontsize = TAM_ETIQUETA)
+    grafico.legend(title = titulo_barra)
+    plt.show()
