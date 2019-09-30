@@ -425,3 +425,21 @@ def crear_heatmap_porcentaje(df_data, caracteristica, titulo, xlabel, ylabel, co
     hm.set_xlabel(xlabel, fontsize = TAM_ETIQUETA)
     hm.set_ylabel(ylabel, fontsize = TAM_ETIQUETA)
     plt.show()
+    
+def crear_df_porcentaje_de_provincias(df1, df2, caracteristica):
+    """df1: el df de cátedra/
+       df2: un df multiindex de la forma {"cantidad": cantidad}, index = [provincia, tipodepropiedad]
+       Devuelve un multiindex con el porcentaje para cada tipo de propiedad por provincia"""
+    cantidad = df1["provincia"].value_counts()
+    index1 = []
+    index2 = []
+    porcentaje = []
+    provincias = set(list(df2.index.get_level_values(0)))
+    for provincia in provincias:
+        df_provincia = df2.loc[provincia].reset_index()
+        for index, row in df_provincia.iterrows():
+            index1.append(provincia)
+            index2.append(row[caracteristica])
+            porcentaje.append((row["cantidad"] * 100) / cantidad[provincia])
+    df = pd.DataFrame({"porcentaje": porcentaje}, index = [index1, index2])
+    return df
