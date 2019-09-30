@@ -458,3 +458,92 @@ def crear_plot_multiple(data, x, y, caracteristica, paleta, titulo, titulo_barra
     grafico.set_ylabel(ylabel, fontsize = TAM_ETIQUETA)
     grafico.legend(title = titulo_barra)
     plt.show()
+
+def densidad_plot_comparativo(df, tipos, columna, caracteristica):
+    '''Crea un density plot para ciertos tipos de propiedad en base a una caracteristica. Columna es el tag para la columna de tipos del dataframe'''
+    for col in tipos: 
+        sns.distplot(df[df[columna] == col][caracteristica].dropna(), hist = False, label = col)
+    plt.ylabel('Densidad')
+    plt.title(f'Distribucion de {caracteristica} para diferentes tipos de propiedad')
+
+def definir_zona(lat):
+    '''Recibe una latitud y devuelve su zona. Lat < 20 para sur, Lat > 24 para norte y entre medio Centro. Devuelve NaN si es NaN'''
+    if lat >= 25:
+        return 'Norte'
+    if lat < 20:
+        return 'Sur'
+    if 20 < lat < 25:
+        return 'Centro'
+    return np.nan
+
+def min_threshold(df, threshold):
+    '''Funcion para filtrar por una minima cantidad de datos'''
+    return df["ciudad"].count() > threshold
+
+def generar_scatter_zonal_oferta(df,zona):
+    '''Genera scatters por año para oferta y zona'''
+    for año in range(2012,2017):
+        nuevo_df = pd.DataFrame()
+        info = df.loc[lambda x:(x['año_publicacion'] == año)]\
+                                            .groupby(['mes_publicacion','año_publicacion'])
+        info = info.agg({'precio':'sum', 'metroscubiertos':'sum', 'mes_publicacion':'count'})
+        plt.scatter(info['mes_publicacion'],info['precio']/info['metroscubiertos'], label = año)
+        plt.ylabel('Precio')
+        plt.xlabel('Cantidad de publicaciones por mes')
+        plt.title(f'Relacion oferta/precio por metro cuadrado promedio para zona {zona}')
+        plt.legend(loc = 'lower right')
+    plt.tight_layout()
+    plt.savefig(f'./figs/scatter_oferta_precio_zona_{zona}.jpg')
+
+def barplot_para_no_bools_zonal(df, categoria):
+    '''Genera barplots para una categoria de variables discreta en base a un dataframe en base a precios/metrocubierto'''
+    aux = df.groupby(['zona', categoria]).agg({'precio':'sum', 'metroscubiertos':'sum'})
+    aux['promedio_precio_metro_cubierto'] = aux['precio']/aux['metroscubiertos']
+    ax = sns.barplot(x = 'zona', y = 'promedio_precio_metro_cubierto', hue = categoria, order = ['Norte', 'Centro', 'Sur'], data = aux.reset_index())
+    handles, labels = ax.get_legend_handles_labels()
+    ax.legend(handles, labels)
+    plt.title(f'Precio promedio por metro cubierto\n para una cantidad de {categoria} segun zona')
+    plt.xlabel('')
+    plt.ylabel('Precio')
+    plt.savefig(f'./figs/{categoria}-Metrocubierto-Precio barplot.jpg')
+
+def get_frequency(palabras):
+    '''En base a una lista de palabras construye un diccionario de frecuencia de cada palabra. Aplica stemming y devuelve un diccionadio de representantes elegidos como la palabra con mas apariciones para una cierta raiz.'''
+    spanish_stemmer = SnowballStemmer('spanish')
+
+    distancias = {}
+    apariciones = {}
+
+    for palabra in palabras:
+        raiz = spanish_stemmer.stem(palabra)
+        distancias[raiz] = distancias.get(raiz,{}) #get_closest_word(raiz, distances.get(stemmed_word, palabra), palabra)
+        distancias[raiz][palabra] = distancias[raiz].get(palabra, 0) + 1
+        apariciones[raiz] = apariciones.get(raiz, 0) + 1
+    
+    representantes = {}
+    for raiz in apariciones:
+        representantes[raiz] = max(list(distancias[raiz].items()), key = lambda x:x[1])[0]
+              
+    return {representantes[raiz]:apariciones[raiz] for raiz in distancias}
+
+def get_palabras_descripciones(df):
+    '''Devuelve una lista de palabras de la columna descripcion de un dataframe.'''
+    palabras = []
+    for texto in list(df['descripcion']):
+        texto = str(texto)
+        for palabra in texto.split():
+            aux = ''
+            for letra in palabra:
+                if letra.isalpha():
+                    aux+=letra
+            if aux:
+                palabras.append(aux)
+    return palabras
+
+def get_stopwords():
+    stop_words_sp = set(stopwords.words('spanish'))
+    stop_words_en = set(stopwords.words('english'))
+    stopwords = stop_words_sp | stop_words_en
+    stopwords.add('para')
+    spanish_stemmer = SnowballStemmer('spanish')
+    return set(map(spanish_stemmer.stem, stopwords))
