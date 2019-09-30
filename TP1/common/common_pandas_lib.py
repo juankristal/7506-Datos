@@ -443,3 +443,18 @@ def crear_df_porcentaje_de_provincias(df1, df2, caracteristica):
             porcentaje.append((row["cantidad"] * 100) / cantidad[provincia])
     df = pd.DataFrame({"porcentaje": porcentaje}, index = [index1, index2])
     return df
+
+def crear_plot_multiple(data, x, y, caracteristica, paleta, titulo, titulo_barra, xlabel, ylabel, orientacion):
+    grafico = sns.barplot(
+        x = x, 
+        hue = caracteristica,
+        y = y,
+        data = data,
+        palette = paleta,
+        orient=orientacion
+    )
+    grafico.set_title(titulo, fontsize = TAM_TITULO)
+    grafico.set_xlabel(xlabel, fontsize = TAM_ETIQUETA)
+    grafico.set_ylabel(ylabel, fontsize = TAM_ETIQUETA)
+    grafico.legend(title = titulo_barra)
+    plt.show()
