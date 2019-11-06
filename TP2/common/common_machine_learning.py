@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-def cargar_set_optimizado(ruta_set_datos):
+def cargar_set_optimizado(ruta_set_datos, index_col = None):
     """
     PRE: Recibe la ruta al el set de datos
     'train.csv', alguno derivado pero que
@@ -32,6 +32,7 @@ def cargar_set_optimizado(ruta_set_datos):
                             'precio': np.float32 \
                             },
                         parse_dates = ['fecha'],
-                        date_parser = pd.to_datetime
+                        date_parser = pd.to_datetime,
+			index_col = index_col
                         )
     return df_optimizado
