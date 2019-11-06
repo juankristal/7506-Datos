@@ -36,3 +36,11 @@ def cargar_set_optimizado(ruta_set_datos, index_col = None):
 			index_col = index_col
                         )
     return df_optimizado
+
+# Metrica: root mean square logarithm error
+def RMSLE(actual, pred):
+    return (np.mean((np.log(actual + 1) - np.log(pred + 1)) ** 2)) **.5
+
+# metrica: mean absolute error
+def MAE(actual, pred):
+    return mean_absolute_error(actual, pred)
