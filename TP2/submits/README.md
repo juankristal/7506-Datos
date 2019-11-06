@@ -23,4 +23,4 @@ Se procede con la propuesta 2.
 
 ### Submits generados por jupyter-notebook | score kaggle
 
-- metadataNavent_mod | 
+- metadataNavent_mod | 1191317.55708
