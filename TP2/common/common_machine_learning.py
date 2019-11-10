@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+from sklearn.preprocessing import LabelEncoder
+from sklearn.impute import SimpleImputer
 
 def cargar_set_optimizado(ruta_set_datos, index_col = None):
     """
@@ -37,10 +39,48 @@ def cargar_set_optimizado(ruta_set_datos, index_col = None):
                         )
     return df_optimizado
 
-# Metrica: root mean square logarithm error
-def RMSLE(actual, pred):
-    return (np.mean((np.log(actual + 1) - np.log(pred + 1)) ** 2)) **.5
+def eliminar_columnas_complejas(set_datos):
+	"""
+	PRE: Recibe un set de datos de propiedades en Mexico 
+	(train.csv o test.csv)
+	POST: Elimina las columnas complejas:
+	['titulo', 'descripcion', 'direccion', 'lat', 'lng', 'fecha', 'idzona']
+	Devolviendo un nuevo set de datos.
+	"""
+	drop_cols = ['titulo', 'descripcion', 'direccion', 'lat', 'lng', 'fecha', 'idzona']
+	nuevo_set_datos = set_datos.drop(drop_cols, axis=1).copy()
+	return nuevo_set_datos
 
-# metrica: mean absolute error
-def MAE(actual, pred):
-    return mean_absolute_error(actual, pred)
+def label_encode_strings_simples(set_datos):
+	"""
+	Aplica label encoding a la columnas categoricas.
+	Devuelve nuevo set de datos.
+	"""
+	cat_features = ['tipodepropiedad', 'provincia', 'ciudad']
+	label_encoder = LabelEncoder()
+	nuevo_set_datos = set_datos.copy()
+	for cat in cat_features:
+	    nuevo_set_datos = nuevo_set_datos.fillna(value = {cat : 'NaN'})
+	    nuevo_set_datos[cat] = label_encoder.fit_transform(nuevo_set_datos[cat])
+	return nuevo_set_datos
+
+def imputar_nulls_numericos(set_datos):
+	"""
+	Imputa nulls numericos:
+	Reemplaza por el promedio en columnas:
+	['metrostotales', 'metroscubiertos', 'antiguedad']
+	Reemplaza por cero en columnas:
+	['habitaciones', 'banos', 'garages']
+	Devuelve nuevo set de datos.
+	"""
+	cols_con_null_a_cero = ['habitaciones', 'banos', 'garages']
+	cols_con_null_a_promedio = ['metrostotales', 'metroscubiertos', 'antiguedad']
+	imp_mean = SimpleImputer()
+	nuevo_set_datos = set_datos.copy()
+	for col in cols_con_null_a_cero:
+    		nuevo_set_datos[col] = nuevo_set_datos.fillna(value = {col : 0})  
+	for col in cols_con_null_a_promedio:
+    		nuevo_set_datos[col] = imp_mean.fit_transform(nuevo_set_datos[[col]])  
+	return nuevo_set_datos
+	
+	
