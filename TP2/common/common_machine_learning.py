@@ -83,4 +83,16 @@ def imputar_nulls_numericos(set_datos):
     		nuevo_set_datos[col] = imp_mean.fit_transform(nuevo_set_datos[[col]])  
 	return nuevo_set_datos
 	
+def busqueda_reportar_mejores_resultados(resultados, n_top=3):
+    for i in range(1, n_top + 1):
+        candidatos = np.flatnonzero(resultados['rank_test_score'] == i)
+        for candidato in candidatos:
+            print("Modelo con rango: {0}".format(i))
+            print("MEAN: {0:.3f} (STD: {1:.3f})".format(
+                  resultados['mean_test_score'][candidato],
+                  resultados['std_test_score'][candidato]))
+            print("Parametros: {0}".format(resultados['params'][candidato])) # hiper-parametros ?
+            print("")
 	
+def kfold_mostrar_resultados(resultados_kfold):
+    print("Resultados: {0}\nMean: {1:.3f}\nStd: {2:.3f}".format(resultados_kfold, np.mean(resultados_kfold), np.std(resultados_kfold)))
