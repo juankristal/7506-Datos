@@ -24,3 +24,5 @@ Se procede con la propuesta 2.
 ### Submits generados por jupyter-notebook | score kaggle
 
 - metadataNavent_mod | 1191317.55708
+- dima_submit_xgboost_0 | 947641.03063 || BEST
+
