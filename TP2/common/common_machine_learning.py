@@ -91,7 +91,7 @@ def busqueda_reportar_mejores_resultados(resultados, n_top=3):
             print("MEAN: {0:.3f} (STD: {1:.3f})".format(
                   resultados['mean_test_score'][candidato],
                   resultados['std_test_score'][candidato]))
-            print("Parametros: {0}".format(resultados['params'][candidato])) # hiper-parametros ?
+            print("Hiper-Parametros: {0}".format(resultados['params'][candidato]))
             print("")
 	
 def kfold_mostrar_resultados(resultados_kfold):
