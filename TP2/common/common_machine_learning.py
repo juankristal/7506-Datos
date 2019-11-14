@@ -51,48 +51,36 @@ def eliminar_columnas_complejas(set_datos):
 	nuevo_set_datos = set_datos.drop(drop_cols, axis=1).copy()
 	return nuevo_set_datos
 
-def label_encode_strings_simples(set_datos):
-	"""
-	Aplica label encoding a la columnas categoricas.
-	Devuelve nuevo set de datos.
-	"""
-	cat_features = ['tipodepropiedad', 'provincia', 'ciudad']
-	label_encoder = LabelEncoder()
-	nuevo_set_datos = set_datos.copy()
-	for cat in cat_features:
-	    nuevo_set_datos = nuevo_set_datos.fillna(value = {cat : 'NaN'})
-	    nuevo_set_datos[cat] = label_encoder.fit_transform(nuevo_set_datos[cat])
-	return nuevo_set_datos
+def get_col_nombres_con_raiz(raiz, lista_col_nombres):
+    """
+    PRE : Recibe un raiz (string), y una lista de 
+    cadenas (string).
+    POST: Devuelve un nueva lista con las cadenas 
+    que llevan la raiz recibido al ppio de la misma 
+    """
+    lista_col_nombres_con_raiz = []
+    for col_nombre in lista_col_nombres:
+        col_nombre_split = col_nombre.split('_')
+        if col_nombre_split[0] == raiz:
+            lista_col_nombres_con_raiz.append(col_nombre)
+    return lista_col_nombres_con_raiz
 
-def imputar_nulls_numericos(set_datos):
-	"""
-	Imputa nulls numericos:
-	Reemplaza por el promedio en columnas:
-	['metrostotales', 'metroscubiertos', 'antiguedad']
-	Reemplaza por cero en columnas:
-	['habitaciones', 'banos', 'garages']
-	Devuelve nuevo set de datos.
-	"""
-	cols_con_null_a_cero = ['habitaciones', 'banos', 'garages']
-	cols_con_null_a_promedio = ['metrostotales', 'metroscubiertos', 'antiguedad']
-	imp_mean = SimpleImputer()
-	nuevo_set_datos = set_datos.copy()
-	for col in cols_con_null_a_cero:
-    		nuevo_set_datos[col] = nuevo_set_datos.fillna(value = {col : 0})  
-	for col in cols_con_null_a_promedio:
-    		nuevo_set_datos[col] = imp_mean.fit_transform(nuevo_set_datos[[col]])  
-	return nuevo_set_datos
-	
-def busqueda_reportar_mejores_resultados(resultados, n_top=3):
-    for i in range(1, n_top + 1):
-        candidatos = np.flatnonzero(resultados['rank_test_score'] == i)
-        for candidato in candidatos:
-            print("Modelo con rango: {0}".format(i))
-            print("MEAN: {0:.3f} (STD: {1:.3f})".format(
-                  resultados['mean_test_score'][candidato],
-                  resultados['std_test_score'][candidato]))
-            print("Hiper-Parametros: {0}".format(resultados['params'][candidato]))
-            print("")
-	
-def kfold_mostrar_resultados(resultados_kfold):
-    print("Resultados: {0}\nMean: {1:.3f}\nStd: {2:.3f}".format(resultados_kfold, np.mean(resultados_kfold), np.std(resultados_kfold)))
+def busqueda_mostrar_resultados_df(cv_result_):
+    """
+    PRE: Recibe los resultados de un XSearch (cv_results_).
+    POST: Muestra los resultados en forma de dataframe.
+    """
+    lista_col_hiperparam_nombre = get_col_nombres_con_raiz('param', cv_results_)
+    df_resultados = pd.DataFrame(cv_results_)
+    df_resultados.sort_values(by = 'rank_test_score', inplace = True)
+    df_resultados.set_index(['rank_test_score'], inplace = True)
+    display(df_resultados[['mean_test_score', 'std_test_score'] + lista_col_hiperparam_nombre])
+
+def busqueda_salvar_resultados_df(cv_result_, nombre_arch):
+    """
+    PRE: Recibe los resultados de un XSearch (cv_results_).
+    POST: Guarda los resultados en forma de csv, para poder cargar 
+    como dataframe
+    """
+    df_resultados = pd.DataFrame(cv_result_)
+    df_resultados.to_csv(nombre_arch, index = False)
