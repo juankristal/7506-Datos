@@ -18,3 +18,8 @@ def agregar_feature_one_hot_encoding(train):
 		dummies = dummies.add_prefix(col + '_')
 		nuevo_train = nuevo_train.join(dummies)
 	return nuevo_train
+
+def eliminar_categoria_no_feature(train):
+	for col in COLS_CATEGORIAS:
+		if col in train.columns:
+			train.drop([col], axis = 1, inplace = True)

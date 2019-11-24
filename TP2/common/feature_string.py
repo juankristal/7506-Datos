@@ -27,7 +27,7 @@ _CANTIDAD_TITULOS = '_cantidad_titulos'
 _CANTIDAD_PALABRAS_TOP_K = '_cantidad_palabras_top_k'
 _CANTIDAD_PALABRAS_BOTTOM_K = '_cantidad_palabras_bottom_k'
 _CANTIDAD_PREFIJOS_TOP_K  = '_cantidad_prefijos_top_k'
-_CANTIDAD_POSTFIJOS_TOP_K = 'cantidad_postfijos_top_k'
+_CANTIDAD_POSTFIJOS_TOP_K = '_cantidad_postfijos_top_k'
 
 TOP_K = 50 # Esperamos muchas repeticiones de la mismas palabras
 BOTTOM_K = 10000 # Esperamos muy pocas repeticiones de cada palabra
