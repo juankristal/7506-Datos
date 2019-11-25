@@ -1,0 +1,33 @@
+﻿provincia,Intervalo de temperatura media annual (minimo),Intervalo de temperatura media annual (máximo),Seco,Templado,Cálido,Frío
+Aguascalientes,12,22,1,1,0,0
+Baja California Norte,6,24,1,1,0,0
+Baja California Sur,14,26,1,1,0,0
+Campeche,24,26,0,0,1,0
+Coahuila,8,22,1,1,0,0
+Colima,10,28,1,1,1,0
+Chiapas,10,30,0,1,1,0
+Chihuahua,8,26,1,1,1,0
+Distrito Federal,6,18,1,1,0,0
+Durango,8,26,1,1,1,0
+Guanajuato,10,24,1,1,0,0
+Guerrero,12,30,1,1,1,0
+Hidalgo,10,24,1,1,1,0
+Jalisco,4,28,1,1,1,0
+México,0,26,1,1,1,1
+Michoacán,8,30,1,1,1,0
+Morelos,2,26,0,1,1,1
+Nayarit,14,28,1,1,1,0
+Nuevo León,8,24,1,1,0,0
+Oaxaca,8,30,1,1,1,0
+Puebla,0,26,1,1,1,1
+Querétaro,10,24,1,1,1,1
+Quintana Roo,24,28,0,0,1,1
+San luis Potosí,10,26,1,1,1,0
+Sinaloa,10,28,1,1,1,0
+Sonora,8,28,1,1,1,0
+Tabasco,22,28,0,0,1,0
+Tamaulipas,10,26,1,1,1,0
+Tlaxcala,2,16,1,1,0,0
+Veracruz,0,28,1,1,1,1
+Yucatán,24,28,1,0,1,0
+Zacatecas,10,24,1,1,1,0
