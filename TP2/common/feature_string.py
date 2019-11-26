@@ -242,7 +242,6 @@ def eliminar_string_no_feature(train):
         if col + _SOLO_PALABRAS_IMPORTANTES in train.columns:
             train.drop([col + _SOLO_PALABRAS_IMPORTANTES], axis = 1, inplace = True)
 
-
 def train_agregar_feature_string_todos_df(train):
     df_feature_string = pd.read_csv('data/dima_train_feature_string_0.csv', )
     nuevo_train = train.merge(df_feature_string, on = 'id')
