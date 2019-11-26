@@ -248,9 +248,10 @@ def train_agregar_feature_string_todos_df(train):
     return nuevo_train
 
 def test_agregar_feature_string_todos_df(test):
-    df_feature_string = pd.read_csv('data/dima_test_feature_string_0.csv', )
+    df_feature_string = pd.read_csv('dima_test_feature_string_0.csv', )
     nuevo_test = test.merge(df_feature_string, on = 'id')
     return nuevo_test
+    
 
     
 
