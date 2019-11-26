@@ -251,8 +251,6 @@ def test_agregar_feature_string_todos_df(test):
     df_feature_string = pd.read_csv('dima_test_feature_string_0.csv', )
     nuevo_test = test.merge(df_feature_string, on = 'id')
     return nuevo_test
-
-def train_string_sin_tags(train):
     
 
     
