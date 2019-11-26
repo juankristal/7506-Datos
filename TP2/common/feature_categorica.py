@@ -23,3 +23,13 @@ def eliminar_categoria_no_feature(train):
 	for col in COLS_CATEGORIAS:
 		if col in train.columns:
 			train.drop([col], axis = 1, inplace = True)
+
+def train_agregar_feature_provincias_ciudades_ohe_reducido_df(train):
+	df_feature_ciudades_provincias_ohe_reducido = pd.read_csv('data/dima_train_feature_provincias_ciudades_ohe_reducida.csv')
+	nuevo_train = train.merge(df_feature_ciudades_provincias_ohe_reducido, on = 'id')
+	return nuevo_train
+
+def test_agregar_feature_provincias_ciudades_ohe_reducido_df(test):
+	df_feature_ciudades_provincias_ohe_reducido = pd.read_csv('data/dima_test_feature_provincias_ciudades_ohe_reducida.csv')
+	nuevo_test = test.merge(df_feature_ciudades_provincias_ohe_reducido, on = 'id')
+	return nuevo_test
