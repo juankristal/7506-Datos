@@ -1,7 +1,9 @@
 from category_encoders import OrdinalEncoder
+#from sklearn.preprocessing import CategoricalEncoder
 from sklearn.impute import SimpleImputer
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
+
 
 def get_train_simple_pre_pipeline():
     columns_pipe = get_columns_pipeline()
