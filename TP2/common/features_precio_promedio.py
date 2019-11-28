@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 
+train = pd.read_csv('sets_de_datos/train.csv', index_col = 0)
+
 
 """
 ===========================================================
@@ -30,7 +32,7 @@ def asignar_precio_promedio_por_cantidad_de_garages_por_ciudad(df):
 
 
 def asignar_precio_promedio_por_cantidad_de_caracteristicas_por_ciudad(df, caracteristica, nombre):
-    caracteristica_preciopromedio = df.groupby(["ciudad", caracteristica])["precio"].mean().to_frame()
+    caracteristica_preciopromedio = train.groupby(["ciudad", caracteristica])["precio"].mean().to_frame()
     caracteristica_preciopromedio = caracteristica_preciopromedio.reset_index()
     caracteristica_preciopromedio = caracteristica_preciopromedio.pivot_table(values="precio",
                                                                               index=caracteristica_preciopromedio["ciudad"],
