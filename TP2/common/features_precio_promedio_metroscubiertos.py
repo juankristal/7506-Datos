@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-train = pd.read_csv('sets_de_datos/train.csv', index_col = 0)
+train = pd.read_csv('sets_de_datos/train_limpio.csv', index_col = 0)
 
 
 """
