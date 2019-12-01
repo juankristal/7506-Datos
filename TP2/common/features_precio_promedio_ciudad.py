@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-train = pd.read_csv('sets_de_datos/train.csv', index_col = 0)
+train = pd.read_csv('sets_de_datos/train_limpio.csv', index_col = 0)
 
 
 """
@@ -10,17 +10,17 @@ train = pd.read_csv('sets_de_datos/train.csv', index_col = 0)
 ===========================================================
 """
 def asignar_precio_promedio_por_cantidad_de_banos_por_ciudad(df):
-    df = asignar_precio_promedio_por_cantidad_de_caracteristicas_por_ciudad(df, "banos", "banos_precio_promedio")
+    df = asignar_precio_promedio_por_cantidad_de_caracteristicas_por_ciudad(df, "banos", "banos_preciopromedio_ciudad")
     return df
 
 
 def asignar_precio_promedio_por_cantidad_de_habitaciones_por_ciudad(df):
-    df = asignar_precio_promedio_por_cantidad_de_caracteristicas_por_ciudad(df, "habitaciones", "habitaciones_precio_promedio")
+    df = asignar_precio_promedio_por_cantidad_de_caracteristicas_por_ciudad(df, "habitaciones", "habitaciones_preciopromedio_ciudad")
     return df
 
 
 def asignar_precio_promedio_por_cantidad_de_garages_por_ciudad(df):
-    df = asignar_precio_promedio_por_cantidad_de_caracteristicas_por_ciudad(df, "garages", "garages_precio_promedio")
+    df = asignar_precio_promedio_por_cantidad_de_caracteristicas_por_ciudad(df, "garages", "garages_preciopromedio_ciudad")
     return df
 
 
