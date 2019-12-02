@@ -12,7 +12,7 @@ def eliminar_num_no_feature(train):
         train.drop(['fecha'], axis  = 1, inplace = True)
 
 def completar_lat_lng_con_provincias_y_ciudades(train):
-    provincias_dict = pd.read_csv('data/ciudades_lat_lon.csv')
+    provincias_dict = pd.read_csv('data/ciudades_lat_lon.csv').to_dict()
     ciudades_dict = pd.read_csv('data/provincias_lat_lon.csv').to_dict()
     train["ciudad"] = train["ciudad"].fillna("")
     train["provincia"] = train["provincia"].fillna("")
@@ -24,7 +24,7 @@ def completar_lat_lng_con_provincias_y_ciudades(train):
 
 def completar_lat_lng_con_idzona_mean(train):
     df_idzona_lat_lng = pd.read_csv('data/dima_idzona_lat_lng_estadisticas.csv')
-    nuevo_train = train.merge(df_idzona_lat_lng, on = 'idzona', how = 'left')
+    nuevo_train = train.merge(df_idzona_lat_lng, on = 'idzona', how = 'left', right_index = True)
     nuevo_train['lat'] = nuevo_train.apply(
         lambda x: x['lat'] if x['lat'] != np.nan else x['lat_mean'], axis = 1)
     nuevo_train['lng'] = nuevo_train.apply(

@@ -16,15 +16,12 @@ def cargar_set_optimizado(ruta_set_datos, index_col = None):
     df_optimizado = pd.read_csv(ruta_set_datos, \
                         dtype={ \
                             'id': np.int32, \
-                            #'tipodepropiedad': 'category', \
-                            #'provincia': 'category', \
-                            #'ciudad': 'category', \
                             'antiguedad': np.float16, \
                             'habitaciones': np.float16, \
                             'garages': np.float16, \
                             'banos': np.float16, \
-                            'metroscubiertos': np.float16, \
-                            'metrostotales': np.float16, \
+                            'metroscubiertos': np.float32, \
+                            'metrostotales': np.float32, \
                             'idzona': np.float32, \
                             'gimnasio': 'bool', \
                             'usosmultiples': 'bool', \
